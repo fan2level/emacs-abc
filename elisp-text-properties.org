@@ -1,0 +1,199 @@
+* Text Properties
+
+**
+**
+**
+** Special Properties
+   Here is a table of text property names that have special build-in 
+   meanings. The following sections list a few additional special property 
+   names that control filling and property inheritance. All other names 
+   have no standard meaning, and you can use them as you like.
+
+*** TODO `category'
+	If a character has a `category' property, we call it the "property 
+	category" of the character. It should be a symbol. The properties of 
+	this symbol serve as defaults for the properties of the character.
+
+	what is `category' ???
+
+*** `face'
+	The `face' property controls the appearance of the character, such 
+	as its font and color. See Faces. The value of the property
+	can be the following:
+
+	* A face name(a symbol or string)
+
+	* A property list of face attributes. This has the form
+	  (KEYWORD VALUE ...), where each KEYWORD is a face attribute name 
+	  and VALUE is a meaningful value for that attribute. With
+	  this feature, you do not need to create a face each time you 
+	  want to specify a particular attribute for certain text.
+
+	* A list of faces. This specifies a face which is an aggregate 
+	  of the attributes of each of the listed faces. Faces 
+	  occuring earlier in the list have higher priority. Each 
+	  list element must have one of the two above forms (i.e., 
+	  either a face name or a property list of face attributes).
+
+	Font Lock mode works in most buffers by dynamically updating the 
+	`face' property of characters based on the context.
+	(Font Lock mode 켜져 있으면 Font Lock mode에서 사용하는 property로 바뀐다)
+
+*** `font-lock-face'
+	This property specifies a value for the `face' property that Font Lock 
+	mode should apply to the underlying text. It is one of the 
+	fontification methods used by Font Lock mode, and is useful for 
+	special modes that implement their own highlighting. See 
+	`Precalculated Fontification'. When Font Lock mode is disabled, 
+	`font-lock-face' has no effect.
+	(Font Lock mode 꺼져 있으면 `face' property 사용해야 한다.)
+
+*** `mouse-face'
+	This property is used instead of `face' when the mouse is on or 
+	near the character. For this purpose, "near" means that all text 
+	between the character and where the mouse is ahve the same 
+	`mouse-face' property value.
+
+	Emacs ignores all face attributes from the `mouse-face' property 
+	that alter the text size (e.g., `:height', `:weight', and `:slant'). 
+	Those attributes are always the same as the unhighlighed text.
+
+	`mouse-face' 는 `face' 보다 우선순위가 높음.
+
+*** `fontified'
+	This property says whether the text is ready for display. If 
+	`nil', Emacs''s redisplay routine calls the functions in 
+	`fontification-functions' (see Auto Faces) to prepare this 
+	part of the buffer before it is displayed. It is used internally 
+	by the "just in time" font locking code.
+
+*** `display'
+	This property activates various features that change the way text 
+	is displayed. For example, it can make text appear taller or 
+	shorter, higher or lower, wider or narrow, or replaced with an 
+	image. See Display Property.
+
+*** `help-echo'
+	If text has a string as its `help-echo' property, then when you 
+	move the mouse onto that text, Emacs displays that string in the 
+	echo area, or in the tooltip window (see Tooltips).
+
+	If the value of the `help-echo' property is a function, that 
+	function is called with three arguments, WINDOW, OBJECT and POS 
+	and should return a help string or `nil' for none. The first 
+	argument, WINDOW is the window in which the help was found. The 
+	second, OBJECT, is the buffer, overlay or string which had the 
+	`help-echo' property. The POS argument is as follows:
+
+	  * If OBJECT is a buffer, POS is the position in the buffer.
+
+	  * If OBJECT is an overlay, that overlay has a `help-echo'
+		property, and POS is the position in the overlay's buffer.
+
+	  * If OBJECT is a string (an overlay string or a string displayed 
+		with the `display' property), POS is the position in that
+	    string.
+		
+	  If the value of the `help-echo' property is neither a function nor 
+	  a string, it is evaluated to obtain a help string.
+
+	  You can alter the way help text is diplayed by setting the 
+	  variable `show-help-function' (see Help display).
+
+	  This feature is used in the mode line and for other avtive text.
+
+*** `keymap'
+	The `keymap' property specifies an additional keymap for commands.
+	When this keymap applies, it is used for key lookup before the 
+	minor mode keymaps and before the buffer's local map. See 
+	Active Keymaps. If the property value is a symbol, the symbol's 
+	funciton definition is used as the keymap.
+
+	The property's value for the character before point applies if it 
+	is non-`nil' and near-sticky, and the property's value for the 
+	character after point applies if it is non-`nil'' and front-sticky.
+	(For mouse clicks, the position of the click is used instead of 
+	the position of point)
+
+*** `local-map'
+	This property works like `keymap' except that it specifies a 
+	keymap to use _instead of_ the buffer's local map. For most
+	purposes (perhaps all purposes), it is better to use the `keymap' 
+	property.
+
+*** `syntax-table'
+	The `syntax-table' property overrides what the syntax table says 
+	about this particular character. See Syntax Properties.
+
+*** `read-only'
+	If a character has the property `read-only', then modifying that 
+	character is not allowed. Any command that would do so gets an 
+	error, `text-read-only'. If the property value is a string, that 
+	string is used as the error message.
+
+	Insertion next to a read-only character is an error if inserting 
+	odrinary text there would inherit the `read-only' property due to 
+	stickiness. Thus, you can control permission to insert next to 
+	read-only text by controlling the stickiness. See Stick Properties.
+
+	Since changing properties counts as modifying the buffer, it is not 
+	possible to remove a `read-only' property unless you know the 
+	special trick: bind `inhibit-read-only' to a non-`nil' value and 
+	then remove the property. See Read Only Buffers.
+
+*** `invisible'
+	A non-`nil `invisible' property can make a character invisible on 
+	the screen. See Invisible Text, for details.
+
+*** `intangible'
+	If a group of consecutive characters have equal and non-`nil' 
+	`intangible' properties, then you cannot place point between them.
+	If you try to move point forward in to the group, point actually 
+	moves to the end of the group. If you try to move point backward 
+	into the group, point actually moves to the start of the group.
+
+	If consecutive characters have unequal non-`nil' `intangible'
+	properties, they belong to separate groups; each group is 
+	separately treated as described abobe.
+
+	When the variable `inhibit-point-motion-hooks' is non-`nil', the 
+	`intangible' property is ignored.
+
+	Beware: this property operates at a very low level, and affects a 
+	lot of code in unexpected ways. So use it with extreme caution.
+	A common misuse is to put an intangible property on invisible 
+	text, which is actually unnecessary since the command loop will 
+	move point outside of the invisible text at the end of each 
+	command anyway. See Adjusting Point.
+
+*** `field'
+	Consecutive characters with the same `field' property constitute a 
+	"field". Some motion functions including `forward-word' and 
+	`beginning-of-line' stop moving at a field boundary. See Fields.
+
+*** `cursor'
+	Normally, the cursor is displayed at the befinning or the end of 
+	any overlay and text property strings present at the current buffer 
+	position. You can place the cursor on any desired character of these 
+	strings by giving that character a non-`nil' `cursor' text property.
+	In addition, if the value of the `cursor' property is an integer
+	number, it specifies the number of buffer's character positions, 
+	starting with the position where the overlay or the `display' property 
+	begins, for which the cursor should be displayed on that character.
+
+*** `pointer'
+*** `line-spacing'
+*** `line-height'
+*** `wrap-prefix'
+*** `line-prefix'
+*** `modification-hooks'
+*** `insert-in-front-hooks'
+*** `insert-behind-hooks'
+*** `point-entered'
+*** `point-left'
+*** `composition''
+
+** Variable
+
+*** inhibit-point-motion-hooks
+*** show-help-function
