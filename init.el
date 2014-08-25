@@ -352,3 +352,27 @@
     )
   )
 
+(defun display-ascii-table (&optional code)
+  "display ascii table
+if CODE is non-`nil', return string for code"
+  (interactive)
+  (let ((result)
+	(ascii-buffer "*ascii table*")
+	)
+    (cond (code (message "%s" (char-to-string code)))
+	  ((null (get-buffer ascii-buffer))
+	   (get-buffer-create ascii-buffer)
+	   (switch-to-buffer ascii-buffer)
+	   (setq header-line-format " DEC HEX Code")
+	   
+	   (save-excursion
+	     (dotimes
+		 (code 256 result)
+	       (insert (format "%03d %03x %s\n" code code (char-to-string code)))
+	       )
+	     )
+	   
+	   (read-only-mode t))
+	  (t (switch-to-buffer ascii-buffer))
+	  )
+    ))
