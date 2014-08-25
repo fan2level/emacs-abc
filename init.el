@@ -90,7 +90,7 @@
 ;; =============================================================================
 ;; graphviz mode
 ;; =============================================================================
-(require 'graphviz-dot-mode)
+(require 'graphviz-dot nil t)
 (defun graphviz-dot-preview2 ()
   "preview dot files"
   (interactive)
