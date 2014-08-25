@@ -63,7 +63,7 @@
 				 (hide-ifdef-mode 1)
 				 ))
 ;; hideif configuration
-(require 'hideif-conf)
+(require 'hideif-conf nil t)
 
 ;; =============================================================================
 ;; perl-mode
@@ -81,7 +81,7 @@
 				 )))
 	     (local-set-key (kbd "C-h f")
 			    '(lambda () (interactive)
-			       (let ((buffer-name "*perdoc*"))
+			       (let ((buffer-name "*perldoc*"))
 				 (if (not (equal (shell-command (format "perldoc -m %s" (select-word)) (get-buffer-create buffer-name)) 0))
 				     (shell-command (format "perldoc -f %s" (select-word)) (get-buffer-create buffer-name)))
 				 )))
@@ -92,7 +92,7 @@
 ;; =============================================================================
 (require 'graphviz-dot-mode)
 (defun graphviz-dot-preview2 ()
-  ""
+  "preview dot files"
   (interactive)
   (let ((preview-buffer-name)
 	(shell-param)
@@ -226,7 +226,7 @@
 	     )
 	  )
 (require 'gnuplot)
-(setq gnuplot-program (executable-find "gnuplot"))
+;; (setq gnuplot-program (executable-find "gnuplot"))
 
 (defun gnuplot-etc-preview (&optional file)
   "gnuplot using emacs"
@@ -284,14 +284,28 @@
 
 "
   (save-excursion
+    ;; (let ((begin)
+    ;; 	  (end)
+    ;; 	  (select-word)
+    ;; 	  (exclude-chars "^=*>&[]!(){}\"'`.,/;:\n\t\s")
+    ;; 	  )
+    ;;   (skip-chars-backward exclude-chars)
+    ;;   (setq begin (point))
+    ;;   (skip-chars-forward exclude-chars)
+    ;;   (setq end (point))
+    ;;   (if (not (= begin end))
+    ;; 	  (setq select-word (buffer-substring-no-properties begin end))
+    ;; 	)
+    ;;   select-word)
+
+    ;; syntax based
     (let ((begin)
 	  (end)
 	  (select-word)
-	  (exclude-chars "^=*>&[]!(){}\"'`.,/;:\n\t\s")
 	  )
-      (skip-chars-backward exclude-chars)
+      (skip-syntax-forward "w_")
       (setq begin (point))
-      (skip-chars-forward exclude-chars)
+      (skip-syntax-backward "w_")
       (setq end (point))
       (if (not (= begin end))
 	  (setq select-word (buffer-substring-no-properties begin end))
