@@ -79,12 +79,6 @@
 				 (setq shell-param (format "perl %s" (concat (file-name-nondirectory (buffer-file-name)))))
 				 (shell-command shell-param (get-buffer-create buffer-name))
 				 )))
-	     (local-set-key (kbd "C-h f")
-			    '(lambda () (interactive)
-			       (let ((buffer-name "*perldoc*"))
-				 (if (not (equal (shell-command (format "perldoc -m %s" (select-word)) (get-buffer-create buffer-name)) 0))
-				     (shell-command (format "perldoc -f %s" (select-word)) (get-buffer-create buffer-name)))
-				 )))
 	     ))
 
 ;; =============================================================================
@@ -170,6 +164,7 @@
 (setq gtags-mode-hook
      '(lambda ()
 	(setq gtags-path-style 'relative)
+	(setq gtags-pop-delete t)
 	;; (setq gtags-suggested-key-mapping t)
 	;; (setq gtags-auto-update t)
 	))
@@ -346,7 +341,7 @@
 	  (t 
 	   (setq select-word (concat "\\<" word "\\>"))
 	   (if (null (assoc select-word hi-lock-interactive-patterns))
-	       (highlight-regexp select-word)
+	       (highlight-regexp select-word (intern (nth (random (length hi-lock-face-defaults)) hi-lock-face-defaults)))
 	     (unhighlight-regexp select-word))
 	   ))
     )
@@ -358,17 +353,27 @@ if CODE is non-`nil', return string for code"
   (interactive)
   (let ((result)
 	(ascii-buffer "*ascii table*")
+	(table-code-max 256)
+	(table-code-row 32)
+	(table-code-column)
+	(table-header " DEC HEX Code DEC HEX Code DEC HEX Code DEC HEX Code DEC HEX Code DEC HEX Code DEC HEX Code DEC HEX Code")
 	)
     (cond (code (message "%s" (char-to-string code)))
-	  ((null (get-buffer ascii-buffer))
+	  ((null (get-buffer ascii-buffer)) 
 	   (get-buffer-create ascii-buffer)
 	   (switch-to-buffer ascii-buffer)
-	   (setq header-line-format " DEC HEX Code")
+	   (setq header-line-format table-header)
 	   
+	   (setq table-code-column (/ table-code-max table-code-row))
 	   (save-excursion
-	     (dotimes
-		 (code 256 result)
-	       (insert (format "%03d %03x %s\n" code code (char-to-string code)))
+	     (dotimes (r table-code-row)
+	       (dotimes (c table-code-column)
+	     	 (insert (format "%03d %03x %s   "
+				 (+ (* c table-code-row) r)
+				 (+ (* c table-code-row) r)
+				 (char-to-string (+ (* c table-code-row) r))))
+	     	 )
+	       (insert "\n")
 	       )
 	     )
 	   
