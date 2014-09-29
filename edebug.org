@@ -1,0 +1,146 @@
+* Edebug
+  is a source-level debugger for Emacs lisp programs
+
+  * Step through evaluation, stopping before and after each expression.
+  * Set conditional or unconditional breakpoints.
+  * Stop when a specified condition is true (the global break event).
+  * Trace slow or fast, stopping briefly at each stop point, or at
+	each breakpoint.
+  * Display expression results and evaluate expressions as if outside 
+	of Edebug.
+  * Automatically re-evaluate a list of expressions and display their 
+	results each time Edebug updates the display.
+  * Output trace information on function calls and returns.
+  * Stop when an error occurs.
+  * Display a backrace, omitting Edebug's own frames.
+  * Specify argument evalution for macros and defining forms.
+  * Obtain rudimentary coverage testing and frequency counts.
+
+  The first three sections below should tell you enough about Edebug to 
+  start using it.
+
+** Using Edebug
+   To debug a Lisp program with Edebug, you must first "instrument" the 
+   Lisp code that you want to debug. A simple way to do this is to first 
+   move point into the definition of a function or macro and then do `C-u 
+   C-M-x' (`eval-defun' with a prefix argument). See
+   (Instrumenting), for alternative ways to instrument code.
+
+   Once a function is instrumented, any call to the function activates 
+   Edebug. Depending on which Edebug execution mode you have selected,
+   activating Edebug may stop execution and let you step through the 
+   function, or it may update the display and continue execution while 
+   checking for debugging commands. The default execution mode is step, 
+   which stops execution. See Edebug Execution Modes.
+
+   Within Edebug, you nomally view an Emacs buffer showing the source 
+   of the Lisp code you are debugging. This is referred to as the "source 
+   code buffer", and it is temporarily read-only.
+
+   An arrow in the left fringe indicates the line where the function is 
+   executing. Point initially shows where within the line the function is 
+   executing, but this ceases to be true if you move point yourself.
+
+   If you instrument the definition of `fac' (shown below) and then 
+   execute `(fac 3)', here is what you would normally see. Point is at 
+   the open-parenthesis before `if'.
+
+     (defun fac (n)
+	 =>-!-(if (< 0 n)
+	       (* n (fac (1- n)))
+		 1))
+
+   The places within a function where Edebug can stop execution are 
+   called "stop points". These occur both before and after each 
+   subexpression that is a list, and also after each variable reference. 
+   Here we use periods to show the stop points in the function `fac':
+
+   todo:
+
+   The special commands of Edebug are available in the source code 
+   buffer in addition to the commands of Emacs Lisp mode. For example,
+   you can type the Edebug command <SPC> to execute until the next stop
+   point. If you type <SPC> once after entry to `fac', here is the 
+   display you will see:
+
+   todo:
+
+   When Edebug stops execution after an expression, it displays the 
+   expression's value in the echo area.
+
+   Other frequently used commands are `b' to set a breakpoint at a stop
+   point, `g' to execute until a breakpoint is reached, and `q' to exit 
+   Edebug and return to the top-level command loop. Type `?' to display a
+   list of all Edebug commands.
+
+** Instrumenting
+   In order to use Edebug to debug Lisp code, you must first "instrument"
+   the code. Instrumenting code inserts additional code into it, to
+   invoke Edebug at the proper places.
+
+   When you invoke command `C-M-x' (`eval-defun') with a prefix 
+   argument on a function definition, it instruments the definition before 
+   evaluating it. (This does not modify the source code itself.) If the 
+   variable `edebug-all-defs' is non-`nil', that inverts the meaning of 
+   the prefix argument: in this case, `C-M-x' instruments the definition 
+   _unless_ it has a prefix argument. The command `M-x edebug-all-defs' toggles 
+   the value of the variable `edebug-all-defs'.
+
+   If `edebug-all-defs' is non-`nil', then the commands `eval-region', 
+   `eval-current-buffer', and `eval-buffer' also instrument any 
+   definitions they evaluate. Similarly, `edebug-all-forms' controls 
+   whether `eval-region' should instrument _any_ form, even non-defining 
+   forms. This doesn't apply to loading or evaluations in the minibuffer.
+   The command `M-x edebug-all-forms' toggles this option.
+
+   Another command, `M-x edebug-eval-top-level-form', is available to 
+   instrument any top-level form regardless of the values of 
+   `edebug-all-defs' and 'edebug-all-forms'. `edebug-defun' is an alias 
+   for `edebug-eval-top-level-form'.
+
+   While Edebug is active, the command `I' (`edebug-instrument-callee') 
+   instruments the definition of the function or macro called by the list 
+   form after point, if it is not already instrumented. This is possible 
+   only if Edebug knows where to find the source for that function; for 
+   this reason, after loading Edebug, `eval-region' records the position 
+   of every definition it evaluates, even if not instrumenting it. See 
+   also the `i' command (see Jumping), which steps into the call after 
+   instrumenting the function.
+
+   Edebug knows how to instrument all the standard special forms,
+   `interactive' forms with an expression argument, anonymous lambda 
+   expressions, and other defining forms. However, Edebug cannot determine 
+   on its own what a user-defined macro will do with the arguments of a 
+   macro call, so you must provide that information using Edebug 
+   specifications; for details, see Edebug and Macros.
+
+   When Edebug is about to instrument code for the first time in a 
+   session, it runs the hook `edebug-setup-hook', then sets it to `nil'.
+   You can use this to load Edebug specifications associated with a 
+   package you are using, but only when you uese Edebug.
+
+   To remove instrumention from a definition, simply re-evaluate its 
+   definition in a way that does not instrument. There are two ways of 
+   evaluating fors that never instrument them: from a file with `load',
+   and from the minibuffer with `eval-expression' (`M-:').
+
+   If Edebug detects a syntax error while instrumenting, it leaves point 
+   at the erroneous code and signals an `invalid-read-syntax' error.
+
+   See Edebug Eval, for other evaluation functions available inside 
+   of Edebug.
+
+** Modes
+** Jumping
+** Misc
+** Breaks
+** Trapping Errors
+** Views
+** Eval
+** Eval List
+** Printing in Edebug
+** Trace Buffer
+** Coverage Testing
+** The Outside Context
+** Edebug and Macros
+** Options
