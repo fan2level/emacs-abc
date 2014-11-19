@@ -43,25 +43,20 @@
 (require 'cc-mode)
 (add-hook 'c-mode-common-hook
 	  '(lambda ()
-	     (hide-ifdef-mode)
 	     (gtags-mode 1)
-	     ))
-(define-key c-mode-map (kbd "M-q") 'ff-find-other-file)
-(add-hook 'c-mode-common-hook
-	  (lambda ()
-	    (font-lock-add-keywords nil
+	     (font-lock-add-keywords nil
 	     '(("\\<\\(fixme\\|FIXME\\|todo\\|TODO\\|checkme\\|caution\\)" 1
 		font-lock-warning-face t)))
-	    ))
+	     (hide-ifdef-mode)
+	     (local-set-key (kbd "M-e") 'glistup-mode)
+	     ))
+(define-key c-mode-map (kbd "M-q") 'ff-find-other-file)
 
 ;; =============================================================================
 ;; hide-ifdef
 ;; =============================================================================
 (setq hide-ifdef-initially t)
 (setq hide-ifdef-shadow t)
-(add-hook 'c-mode-common-hook '(lambda ()
-				 (hide-ifdef-mode 1)
-				 ))
 ;; hideif configuration
 (require 'hideif-conf nil t)
 
@@ -123,14 +118,23 @@
 (global-set-key "\C-cc" 'org-capture)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
+
 (setq org-todo-keywords
-      '((sequence "TODO" "DOING" "FIXME" "|" "CHECK" "DONE")
-	)
-      )
-(add-hook 'org-mode-hook 'turn-on-font-lock)
+      '(
+	;; (sequence "TODO" "|" "DONE")
+	(sequence "TODO" "DOING" "FIXME" "NOT SUPPORT"  "|" "CHECK" "DONE")
+	;; (type "bsp" "model" "|" "DONE")
+	))
+(setq org-todo-keyword-faces
+      '(("TODO" . org-warning) 
+	("FIXME" . "yellow")
+	("CHECK" . (:foreground "blue" :background "yellow" :weight bold))
+	))
 (add-hook 'org-mode-hook '(lambda () 
 			    (progn 
-			      (setq tab-width 4))))
+			      (turn-on-font-lock)
+			      (setq tab-width 4)
+			      )))
 
 ;; =============================================================================
 ;; gtags mode
@@ -245,11 +249,11 @@
       (insert "set grid ytics lt 0 lw 1 lc rgb \\\"#bbbbbb\\\"" ";")
       (insert "set grid xtics lt 0 lw 1 lc rgb \\\"#bbbbbb\\\"" ";")
       (insert "set ylabel \\\"Voltage(V)\\\"" ";")
-      (insert "set ytics 3,0.1,4.3" ";")
-      (insert "set yrange [3.000:4.300]" ";")
-      (insert "set y2label \\\"Temperature(\\260C)\\\"" ";")
-      (insert "set y2tics -20,5,80" ";")
-      (insert "set y2range [-20:80]" ";") ;
+      (insert "set ytics 2.5,0.1,4.3" ";")
+      (insert "set yrange [2.500:4.300]" ";")
+      ;; (insert "set y2label \\\"Temperature(\\260C)\\\"" ";")
+      ;; (insert "set y2tics -20,5,80" ";")
+      ;; (insert "set y2range [-20:80]" ";") ;
 
       (insert "set xtics 60*30 rotate by -45" ";")
       (insert "set xlabel \\\"Time(Seconds)\\\"" ";")
@@ -258,8 +262,8 @@
       (insert "set label 2 at A_index_max, graph 0.9 sprintf(\\\"max=%.3f\\\",A_max) center offset 0,1" ";")
       (insert "plot")
       (insert (format " \\\"%s\\\" using 1:2 axis x1y1 title 'Voltage'" filepath))
-      (insert ",")
-      (insert (format " \\\"%s\\\" using 1:3 axis x1y2 title 'Temperature'" filepath))
+      ;; (insert ",")
+      ;; (insert (format " \\\"%s\\\" using 1:3 axis x1y2 title 'Temperature'" filepath))
 
       (insert "\"")
       (shell-command (buffer-string) (get-buffer-create buffer-name))
