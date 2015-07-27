@@ -44,10 +44,10 @@
 (add-hook 'c-mode-common-hook
 	  '(lambda ()
 	     (gtags-mode 1)
+	     (hide-ifdef-mode)
 	     (font-lock-add-keywords nil
 	     '(("\\<\\(fixme\\|FIXME\\|todo\\|TODO\\|checkme\\|caution\\)" 1
 		font-lock-warning-face t)))
-	     (hide-ifdef-mode)
 	     (local-set-key (kbd "M-e") 'glistup-mode)
 	     ))
 (define-key c-mode-map (kbd "M-q") 'ff-find-other-file)
@@ -76,6 +76,36 @@
 				 )))
 	     ))
 
+;; ===============
+;; python-mode
+;; ===============
+(defun python-preview (&optional file)
+  "evaluation python code"
+  (interactive)
+  (let ((filename (or file (concat (file-name-nondirectory (buffer-file-name)))))
+	(buffer-name "*python evaluation*"))
+    (setq shell-param (format "python %s" (concat (file-name-nondirectory (buffer-file-name)))))
+    (shell-command
+     (format "python %s" filename) (get-buffer-create buffer-name))
+    ))
+
+(defun python-doc (&optional symbol)
+  "python documentation for symbol"
+  (interactive)
+  (let ((help (or symbol (select-word)))
+	(buffer-name "*python document*")
+	)
+    (shell-command
+     (format "python c:/Python26/Lib/pydoc.py %s" help) (get-buffer-create buffer-name))
+    ))
+
+(add-hook 'python-mode-hook
+	  '(lambda ()
+	     (local-set-key (kbd "M-p") 'python-preview)
+	     (local-set-key (kbd "<f1>") 'python-doc)
+	     (fci-mode 1)
+	     ))
+
 ;; =============================================================================
 ;; graphviz mode
 ;; =============================================================================
@@ -92,7 +122,7 @@
 	(kill-buffer preview-buffer-name)
       )
     (setq current-filename (concat (file-name-nondirectory (buffer-file-name))))
-    (setq shell-param (format "dot -Tpng %s" current-filename))
+    (setq shell-param (format "dot -Tjpeg %s" current-filename))
     (shell-command shell-param (get-buffer-create preview-buffer-name))
     (switch-to-buffer-other-window preview-buffer-name)
     (image-mode)
@@ -103,6 +133,7 @@
 
 (add-hook 'graphviz-dot-mode-hook
 	  '(lambda ()
+	     (setq indent-tabs-mode nil)
 	     (setq graphviz-dot-indent-width 4)
 	     (setq graphviz-dot-auto-indent-on-semi nil)
 	     (local-set-key (kbd "M-p") 'graphviz-dot-preview2)
@@ -122,13 +153,14 @@
 (setq org-todo-keywords
       '(
 	;; (sequence "TODO" "|" "DONE")
-	(sequence "TODO" "DOING" "FIXME" "NOT SUPPORT"  "|" "CHECK" "DONE")
+	(sequence "TODO" "DOING" "FIXME" "CHECK" "|" "DONE")
 	;; (type "bsp" "model" "|" "DONE")
 	))
 (setq org-todo-keyword-faces
       '(("TODO" . org-warning) 
-	("FIXME" . "yellow")
+	("FIXME" . org-warning)
 	("CHECK" . (:foreground "blue" :background "yellow" :weight bold))
+	("DOING" . (:foreground "blue" :background "yellow" :weight bold))
 	))
 (add-hook 'org-mode-hook '(lambda () 
 			    (progn 
@@ -144,26 +176,25 @@
 (setq gtags-suggested-key-mapping t)
 (add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))
 (add-hook 'c++-mode-hook '(lambda () (gtags-mode 1)))
-(add-hook 'after-save-hook
-	  (lambda ()
-	    (and (boundp 'gtags-mode) gtags-mode
-		 (let (root-dir current-dir shell-param)
-		   (setq root-dir (gtags-get-rootpath))
-		   ;; valid if gtags exist
-		   (if root-dir
-		       (progn
-		   	 (setq current-dir (file-name-directory buffer-file-name))
-		   	 (setq shell-param (concat "gtags --single-update " buffer-file-name))
-		   	 (cd root-dir)
-		   	 (shell-command shell-param)
-		   	 ;; (start-process "gtags-update" nil "gtags" "--single-update" buffer-file-name)
-		   	 (cd current-dir)
-		   	 )
-		     )
-		   )
-	      )
-	    )
-	  )
+;; (add-hook 'after-save-hook
+;; 	  (lambda ()
+;; 	    (and (boundp 'gtags-mode) gtags-mode
+;; 		 (let (root-dir current-dir shell-param)
+;; 		   (setq root-dir (gtags-get-rootpath))
+;; 		   ;; valid if gtags exist
+;; 		   (if root-dir
+;; 		       (progn
+;; 		   	 (setq current-dir (file-name-directory buffer-file-name))
+;; 		   	 (setq shell-param (concat "gtags --single-update " buffer-file-name))
+;; 		   	 (cd root-dir)
+;; 		   	 (shell-command shell-param)
+;; 		   	 (cd current-dir)
+;; 		   	 )
+;; 		     )
+;; 		   )
+;; 	      )
+;; 	    )
+;; 	  )
 
 (setq gtags-mode-hook
      '(lambda ()
@@ -243,25 +274,26 @@
     (with-temp-buffer
       (insert "gnuplot -e \"")
 
-      (insert "set term png size 1400,400" ";")
+      (insert "set term jpeg size 1400,400" ";")
       (insert "set style data linespoints" ";")
       ;; (insert "set key box linestyle -1" ";")
-      (insert "set grid ytics lt 0 lw 1 lc rgb \\\"#bbbbbb\\\"" ";")
-      (insert "set grid xtics lt 0 lw 1 lc rgb \\\"#bbbbbb\\\"" ";")
-      (insert "set ylabel \\\"Voltage(V)\\\"" ";")
-      (insert "set ytics 2.5,0.1,4.3" ";")
-      (insert "set yrange [2.500:4.300]" ";")
+      ;; (insert "set grid ytics lt 0 lw 1 lc rgb \\\"#bbbbbb\\\"" ";")
+      ;; (insert "set grid xtics lt 0 lw 1 lc rgb \\\"#bbbbbb\\\"" ";")
+      ;; (insert "set ylabel \\\"Voltage(V)\\\"" ";")
+      ;; (insert "set ytics 2.5,0.1,4.3" ";")
+      ;; (insert "set yrange [2.500:4.300]" ";")
       ;; (insert "set y2label \\\"Temperature(\\260C)\\\"" ";")
       ;; (insert "set y2tics -20,5,80" ";")
       ;; (insert "set y2range [-20:80]" ";") ;
 
-      (insert "set xtics 60*30 rotate by -45" ";")
-      (insert "set xlabel \\\"Time(Seconds)\\\"" ";")
-      (insert (format "stats \\\"%s\\\" using 2 name \\\"A\\\" nooutput" filepath) ";")
-      (insert "set label 1 at A_index_min, graph 0.1 sprintf(\\\"min=%.3f\\\",A_min) center offset 0,-1" ";")
-      (insert "set label 2 at A_index_max, graph 0.9 sprintf(\\\"max=%.3f\\\",A_max) center offset 0,1" ";")
+      ;; (insert "set xtics 60*30 rotate by -45" ";")
+      ;; (insert "set xlabel \\\"Time(Seconds)\\\"" ";")
+      ;; (insert (format "stats \\\"%s\\\" using 2 name \\\"A\\\" nooutput" filepath) ";")
+      ;; (insert "set label 1 at A_index_min, graph 0.1 sprintf(\\\"min=%.3f\\\",A_min) center offset 0,-1" ";")
+      ;; (insert "set label 2 at A_index_max, graph 0.9 sprintf(\\\"max=%.3f\\\",A_max) center offset 0,1" ";")
       (insert "plot")
-      (insert (format " \\\"%s\\\" using 1:2 axis x1y1 title 'Voltage'" filepath))
+      ;; (insert (format " \\\"%s\\\" using 1:2 axis x1y1 title 'Voltage'" filepath))
+      (insert (format " \\\"%s\\\" using 1:2" filepath))
       ;; (insert ",")
       ;; (insert (format " \\\"%s\\\" using 1:3 axis x1y2 title 'Temperature'" filepath))
 
