@@ -2,17 +2,20 @@
 (when (>= emacs-major-version 24)
   (require 'package)
   (package-initialize)
+  (setq package-check-signature nil)
   (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+  (add-to-list 'package-archives
+             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
   )
 
 ;; key mapping
-(global-set-key (kbd "<f1>") 'undefined)
+(global-set-key (kbd "<f1>") '(lambda () (interactive) (call-process "explorer.exe" nil nil nil ".")))
 (global-set-key (kbd "<f2>") 'undefined)
 (global-set-key (kbd "<f3>") 'undefined)
 (global-set-key (kbd "<f4>") 'undefined)
-(global-set-key (kbd "<f5>") 'undefined)
+(global-set-key (kbd "<f5>") '(lambda () (interactive) (revert-buffer t t)))
 (global-set-key (kbd "<f6>") 'undefined)
-(global-set-key (kbd "<f7>") 'undefined)
+(global-set-key (kbd "<f7>") 'highlight-select-word)
 (global-set-key (kbd "<f8>") 'undefined)
 (global-set-key (kbd "<f9>") 'undefined)
 (global-set-key (kbd "<f10>") 'undefined)
@@ -21,6 +24,7 @@
 (global-set-key (kbd "\C-hc") 'describe-char)
 
 ;; settings ui
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 (setq make-backup-files nil)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -96,14 +100,14 @@
 	(buffer-name "*python document*")
 	)
     (shell-command
-     (format "python c:/Python26/Lib/pydoc.py %s" help) (get-buffer-create buffer-name))
+     (format "python c:/Python3/Lib/pydoc.py %s" help) (get-buffer-create buffer-name))
     ))
 
 (add-hook 'python-mode-hook
 	  '(lambda ()
 	     (local-set-key (kbd "M-p") 'python-preview)
 	     (local-set-key (kbd "<f1>") 'python-doc)
-	     (fci-mode 1)
+	     ;; (fci-mode 1)
 	     ))
 
 ;; =============================================================================
@@ -241,71 +245,71 @@
 ;; =============================================================================
 ;; glistup mode
 ;; =============================================================================
-(require 'glistup)
+;; (require 'glistup)
 
 ;; =============================================================================
 ;; gnuplot mode
 ;; =============================================================================
-(autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
-(autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot-mode" t)
-(setq auto-mode-alist (append '(("\\.gp$" . gnuplot-mode))
-			      auto-mode-alist))
-(add-hook 'gnuplot-mode-hook
-	  '(lambda ()
-	     (local-set-key (kbd "M-p") 'gnuplot-etc-preview)
-	     )
-	  )
-(require 'gnuplot)
-;; (setq gnuplot-program (executable-find "gnuplot"))
+;; (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
+;; (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot-mode" t)
+;; (setq auto-mode-alist (append '(("\\.gp$" . gnuplot-mode))
+;; 			      auto-mode-alist))
+;; (add-hook 'gnuplot-mode-hook
+;; 	  '(lambda ()
+;; 	     (local-set-key (kbd "M-p") 'gnuplot-etc-preview)
+;; 	     )
+;; 	  )
+;; (require 'gnuplot)
+;; ;; (setq gnuplot-program (executable-find "gnuplot"))
 
-(defun gnuplot-etc-preview (&optional file)
-  "gnuplot using emacs"
-  (interactive)
-  (let ((filepath)
-	(buffer-name "*gnuplot*")
-	)
-    (if (get-buffer buffer-name)
-	(kill-buffer buffer-name))
-    (if file
-	(setq filepath file)
-      (setq filepath (buffer-file-name))
-      )
+;; (defun gnuplot-etc-preview (&optional file)
+;;   "gnuplot using emacs"
+;;   (interactive)
+;;   (let ((filepath)
+;; 	(buffer-name "*gnuplot*")
+;; 	)
+;;     (if (get-buffer buffer-name)
+;; 	(kill-buffer buffer-name))
+;;     (if file
+;; 	(setq filepath file)
+;;       (setq filepath (buffer-file-name))
+;;       )
     
-    (with-temp-buffer
-      (insert "gnuplot -e \"")
+;;     (with-temp-buffer
+;;       (insert "gnuplot -e \"")
 
-      (insert "set term jpeg size 1400,400" ";")
-      (insert "set style data linespoints" ";")
-      ;; (insert "set key box linestyle -1" ";")
-      ;; (insert "set grid ytics lt 0 lw 1 lc rgb \\\"#bbbbbb\\\"" ";")
-      ;; (insert "set grid xtics lt 0 lw 1 lc rgb \\\"#bbbbbb\\\"" ";")
-      ;; (insert "set ylabel \\\"Voltage(V)\\\"" ";")
-      ;; (insert "set ytics 2.5,0.1,4.3" ";")
-      ;; (insert "set yrange [2.500:4.300]" ";")
-      ;; (insert "set y2label \\\"Temperature(\\260C)\\\"" ";")
-      ;; (insert "set y2tics -20,5,80" ";")
-      ;; (insert "set y2range [-20:80]" ";") ;
+;;       (insert "set term jpeg size 1400,400" ";")
+;;       (insert "set style data linespoints" ";")
+;;       ;; (insert "set key box linestyle -1" ";")
+;;       ;; (insert "set grid ytics lt 0 lw 1 lc rgb \\\"#bbbbbb\\\"" ";")
+;;       ;; (insert "set grid xtics lt 0 lw 1 lc rgb \\\"#bbbbbb\\\"" ";")
+;;       ;; (insert "set ylabel \\\"Voltage(V)\\\"" ";")
+;;       ;; (insert "set ytics 2.5,0.1,4.3" ";")
+;;       ;; (insert "set yrange [2.500:4.300]" ";")
+;;       ;; (insert "set y2label \\\"Temperature(\\260C)\\\"" ";")
+;;       ;; (insert "set y2tics -20,5,80" ";")
+;;       ;; (insert "set y2range [-20:80]" ";") ;
 
-      ;; (insert "set xtics 60*30 rotate by -45" ";")
-      ;; (insert "set xlabel \\\"Time(Seconds)\\\"" ";")
-      ;; (insert (format "stats \\\"%s\\\" using 2 name \\\"A\\\" nooutput" filepath) ";")
-      ;; (insert "set label 1 at A_index_min, graph 0.1 sprintf(\\\"min=%.3f\\\",A_min) center offset 0,-1" ";")
-      ;; (insert "set label 2 at A_index_max, graph 0.9 sprintf(\\\"max=%.3f\\\",A_max) center offset 0,1" ";")
-      (insert "plot")
-      ;; (insert (format " \\\"%s\\\" using 1:2 axis x1y1 title 'Voltage'" filepath))
-      (insert (format " \\\"%s\\\" using 1:2" filepath))
-      ;; (insert ",")
-      ;; (insert (format " \\\"%s\\\" using 1:3 axis x1y2 title 'Temperature'" filepath))
+;;       ;; (insert "set xtics 60*30 rotate by -45" ";")
+;;       ;; (insert "set xlabel \\\"Time(Seconds)\\\"" ";")
+;;       ;; (insert (format "stats \\\"%s\\\" using 2 name \\\"A\\\" nooutput" filepath) ";")
+;;       ;; (insert "set label 1 at A_index_min, graph 0.1 sprintf(\\\"min=%.3f\\\",A_min) center offset 0,-1" ";")
+;;       ;; (insert "set label 2 at A_index_max, graph 0.9 sprintf(\\\"max=%.3f\\\",A_max) center offset 0,1" ";")
+;;       (insert "plot")
+;;       ;; (insert (format " \\\"%s\\\" using 1:2 axis x1y1 title 'Voltage'" filepath))
+;;       (insert (format " \\\"%s\\\" using 1:2" filepath))
+;;       ;; (insert ",")
+;;       ;; (insert (format " \\\"%s\\\" using 1:3 axis x1y2 title 'Temperature'" filepath))
 
-      (insert "\"")
-      (shell-command (buffer-string) (get-buffer-create buffer-name))
-      )
+;;       (insert "\"")
+;;       (shell-command (buffer-string) (get-buffer-create buffer-name))
+;;       )
 
-    (switch-to-buffer-other-window buffer-name)
-    (image-mode)
-    (previous-multiframe-window)
-    )
-  )
+;;     (switch-to-buffer-other-window buffer-name)
+;;     (image-mode)
+;;     (previous-multiframe-window)
+;;     )
+;;   )
 
 ;; =============================================================================
 ;; etc function
