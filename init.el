@@ -41,7 +41,7 @@
 ;; 			    (height . 32)))
 (set-language-environment "Korean")
 (prefer-coding-system 'utf-8)
-(set-frame-font "DejaVu Sans Mono-16" nil t)
+;; (set-frame-font "DejaVu Sans Mono-16" nil t)
 (custom-set-variables
  '(initial-frame-alist (quote ((fullscreen . maximized)))))
 
