@@ -100,14 +100,7 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 (setq org-log-done t)
-(setq org-agenda-files (list
-			;; "d:/B/autosar.org"
-			"d:/B/glossary.org"
-			;; "d:/B/functionSet.org"
-			"d:/P/999_todo.org"
-			"d:/P/920_Framework/framework.org"
-			;; "d:/P/921_Emulator/emulator.org"
-			))
+
 (setq org-todo-keywords
       '(
 	;; (sequence "TODO" "|" "DONE")
