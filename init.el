@@ -3,7 +3,10 @@
   (require 'package)
   (package-initialize)
   ;; (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+  (add-to-list 'package-archives
+	       '("melpa" . "http://melpa.org/packages/") t)
+  ;; (add-to-list 'package-archives
+  ;; 	       '("melpa" . "http://stable.melpa.org/packages/") t)
   )
 
 (global-set-key (kbd "<f1>") '(lambda () (interactive)
@@ -143,9 +146,20 @@
 					    (c-beginning-of-defun)))
 	     (local-set-key (kbd "C-<f2>") 'c-beginning-of-defun)
 	     (setq indent-tabs-mode nil)
-	     ;; (setq-default tab-with 4)
+	     (setq-default tab-with 4)
 	     ))
 (define-key c-mode-map (kbd "M-q") 'ff-find-other-file)
+
+;; c++-mode
+(add-hook 'c++-mode-hook
+	  '(lambda ()
+	     (gtags-mode 1)
+	     (yas-minor-mode 1)
+	     (setq-default tab-with 4)
+	     (local-set-key (kbd "M-q" 'ff-find-other-file))
+	     ))
+(define-key c++-mode-map (kbd "M-q") 'ff-find-other-file)
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 
 ;; per-mode
 (defalias 'perl-mode 'cperl-mode)
@@ -357,7 +371,10 @@
     )
   )
 
-
+;; Yasnippet
+(require 'yasnippet)
+(setq yas-global-mode 1)
+(yas-reload-all)
 
 ;;
 ;;
@@ -559,7 +576,7 @@ if CODE is non-`nil', return string for code"
 
 ;; external-el
 ;; (load-file "c:/iam/emacs/site-lisp/coding.el")
-;; (load-file "c:/iam/gnuglobal/current/share/gtags/gtags.el")
+(load-file "c:/iam/gnuglobal/current/share/gtags/gtags.el")
 
 (setq initial-scratch-message
       (concat initial-scratch-message
