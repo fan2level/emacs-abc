@@ -1,15 +1,7 @@
-;; configuration
-;; (when (>= emacs-major-version 24)
-;;   (require 'package)
-;;   (package-initialize)
-;;   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-;;   )
-
 (global-set-key (kbd "<f1>") (lambda () (interactive)
 			       (call-process "explorer.exe" nil nil nil ".")))
 (global-set-key (kbd "<f2>") 'undefined)
-(global-set-key (kbd "<f3>") (lambda () (interactive)
-			       (shell-command  (format "svn /command:log /path:%s" (file-name-nondirectory (car (dired-get-marked-files)))))))
+(global-set-key (kbd "<f3>") 'undefined)
 (global-set-key (kbd "<f4>") 'undefined)
 (global-set-key (kbd "<f5>") (lambda () (interactive)
 			       (revert-buffer :ignore-auto :noconfirm)))
@@ -24,31 +16,20 @@
 (global-set-key (kbd "C-<left>") 'previous-buffer)
 (global-set-key (kbd "C-<right>") 'next-buffer)
 
-(when (eq system-type 'windows-nt')
+(when (eq system-type 'windows-nt)
   (setenv "PATH"
 	  (concat
 	   "c:/iam/bin" ";"
 	   (getenv "PATH")
 	   ))
   (setq default-directory "c:/iam")
+  (set-frame-font "DejaVu Sans Mono-16" nil t)
   )
 
-;; --------------------------------------------------
-;; ui
-;; --------------------------------------------------
-;; (setq initial-frame-alist '((left . 0)
-;; 			    (top . 0)
-;; 			    (width . 117)
-;; 			    (height . 32)))
 (set-language-environment "Korean")
 (prefer-coding-system 'utf-8)
-(set-frame-font "DejaVu Sans Mono-16" nil t)
 (custom-set-variables
  '(initial-frame-alist (quote ((fullscreen . maximized)))))
-
-(require 'dired)
-(setq dired-listing-switches "-lh")
-(setq ls-lisp-dirs-first t)
 
 (setq make-backup-files nil)
 (menu-bar-mode -1)
@@ -58,6 +39,59 @@
 (set-background-color "honeydew")
 (show-paren-mode t)
 (transient-mark-mode t)
+
+(use-package package
+  :ensure t
+  :config
+  (package-initialize)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
+(use-package dired
+  :defer t
+  :init
+  (setq ls-lisp-dirs-first t)
+  :config
+  (setq dired-listing-switches "-lh"))
+(use-package python-mode
+  :ensure t
+  :defer t
+  :mode ("\\.py\\'" "\\.SConstruct\\'")
+  :bind (:map python-mode-map
+	      ("M-p" . (lambda (&optional file)
+			 (interactive)
+			 (let ((filename (or file (concat (file-name-nondirectory (buffer-file-name)))))
+			       (buffer-name "*python evaluation*"))
+			   (setq shell-param (format "python %s" (concat (file-name-nondirectory (buffer-file-name)))))
+			   (shell-command
+			    (format "python %s" filename) (get-buffer-create buffer-name)))))
+	      ("<f1>" . (lambda (&optional symbol)
+			  (interactive)
+			  (let ((help (or symbol (select-word)))
+				(buffer-name "*python document*")
+				)
+			    (shell-command
+			     (format "python c:/Python37-32/Lib/pydoc.py %s" help) (get-buffer-create buffer-name))
+			    )))))
+(use-package cperl-mode
+  :ensure t
+  :defer t
+  :bind (:map cperl-mode-map
+	      ("M-p" . (lambda ()
+			 (interactive)
+			 (let ((shell-param)
+			       (buffer-name "*perl evaluation*"))
+			   (setq shell-param (format "perl %s" (concat (file-name-nondirectory (buffer-file-name)))))
+			   (shell-command shell-param (get-buffer-create buffer-name))
+			   )))))
+(use-package bitbake
+  :ensure t
+  :defer t
+  :mode ("\\.bb\\'" "\\.bbappend\\'" "\\.bbclass\\'"))
+(use-package yasnippet
+  :ensure t
+  :defer t
+  :config
+  (setq yas-global-mode 1)
+  (yas-reload-all))
 
 ;; --------------------------------------------------
 ;; mode
@@ -158,54 +192,6 @@
 	    ))
 (define-key c++-mode-map (kbd "M-q") 'ff-find-other-file)
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-
-;; per-mode
-(defalias 'perl-mode 'cperl-mode)
-(add-hook 'cperl-mode-hook 
-	  (lambda ()
-	    ;; evaluation perl script
-	    (local-set-key (kbd "M-p") 
-			   (lambda () (interactive)
-			     (let ((shell-param)
-				   (buffer-name "*perl evaluation*"))
-			       (setq shell-param (format "perl %s" (concat (file-name-nondirectory (buffer-file-name)))))
-			       (shell-command shell-param (get-buffer-create buffer-name))
-			       )))
-	    ))
-
-;; python-mode
-(defun python-preview (&optional file)
-  "evaluation python code"
-  (interactive)
-  (let ((filename (or file (concat (file-name-nondirectory (buffer-file-name)))))
-	(buffer-name "*python evaluation*"))
-    (setq shell-param (format "python %s" (concat (file-name-nondirectory (buffer-file-name)))))
-    (shell-command
-     (format "python %s" filename) (get-buffer-create buffer-name))
-    ))
-
-(defun python-doc (&optional symbol)
-  "python documentation for symbol"
-  (interactive)
-  (let ((help (or symbol (select-word)))
-	(buffer-name "*python document*")
-	)
-    (shell-command
-     (format "python c:/Python37-32/Lib/pydoc.py %s" help) (get-buffer-create buffer-name))
-    ))
-
-(add-hook 'python-mode-hook
-	  (lambda ()
-	    (local-set-key (kbd "M-p") 'python-preview)
-	    (local-set-key (kbd "<f1>") 'python-doc)
-	    ;; (fci-mode 1)
-	    ;; jedi:setup
-	    ;; (setq jedi:complete-on-dot t)
-	    )
-	  )
-(setq auto-mode-alist (append '(("SConstruct" . python-mode) ;scons
-				)
-			      auto-mode-alist))
 
 ;; graphviz-mode
 (require 'graphviz-dot nil t)
@@ -368,11 +354,6 @@
     (previous-multiframe-window)
     )
   )
-
-;; Yasnippet
-(require 'yasnippet)
-(setq yas-global-mode 1)
-(yas-reload-all)
 
 ;;
 ;;
