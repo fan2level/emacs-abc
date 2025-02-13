@@ -1,26 +1,22 @@
 ;; configuration
-(when (>= emacs-major-version 24)
-  (require 'package)
-  (package-initialize)
-  ;; (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
-  (add-to-list 'package-archives
-	       '("melpa" . "http://melpa.org/packages/") t)
-  ;; (add-to-list 'package-archives
-  ;; 	       '("melpa" . "http://stable.melpa.org/packages/") t)
-  )
+;; (when (>= emacs-major-version 24)
+;;   (require 'package)
+;;   (package-initialize)
+;;   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+;;   )
 
-(global-set-key (kbd "<f1>") '(lambda () (interactive)
-				(call-process "explorer.exe" nil nil nil ".")))
+(global-set-key (kbd "<f1>") (lambda () (interactive)
+			       (call-process "explorer.exe" nil nil nil ".")))
 (global-set-key (kbd "<f2>") 'undefined)
-(global-set-key (kbd "<f3>") '(lambda () (interactive)
-				(shell-command  (format "svn /command:log /path:%s" (file-name-nondirectory (car (dired-get-marked-files)))))))
+(global-set-key (kbd "<f3>") (lambda () (interactive)
+			       (shell-command  (format "svn /command:log /path:%s" (file-name-nondirectory (car (dired-get-marked-files)))))))
 (global-set-key (kbd "<f4>") 'undefined)
-(global-set-key (kbd "<f5>") '(lambda () (interactive)
-				(revert-buffer :ignore-auto :noconfirm)))
+(global-set-key (kbd "<f5>") (lambda () (interactive)
+			       (revert-buffer :ignore-auto :noconfirm)))
 (global-set-key (kbd "<f6>") 'undefined)
 (global-set-key (kbd "<f7>") 'highlight-select-word)
-(global-set-key (kbd "<f8>") 'undefined)
-(global-set-key (kbd "<f9>") 'undefined)
+(global-set-key (kbd "<f8>") 'shrink-window)
+(global-set-key (kbd "<f9>") 'enlarge-window)
 (global-set-key (kbd "<f10>") 'undefined)
 (global-set-key (kbd "<f11>") 'undefined)
 (global-set-key (kbd "<f12>") 'undefined)
@@ -28,12 +24,14 @@
 (global-set-key (kbd "C-<left>") 'previous-buffer)
 (global-set-key (kbd "C-<right>") 'next-buffer)
 
-(setenv "PATH"
-	(concat
-	 "c:/iam/bin" ";"
-	 (getenv "PATH")
-	 ))
-(setq default-directory "c:")
+(when (eq system-type 'windows-nt')
+  (setenv "PATH"
+	  (concat
+	   "c:/iam/bin" ";"
+	   (getenv "PATH")
+	   ))
+  (setq default-directory "c:/iam")
+  )
 
 ;; --------------------------------------------------
 ;; ui
@@ -44,7 +42,7 @@
 ;; 			    (height . 32)))
 (set-language-environment "Korean")
 (prefer-coding-system 'utf-8)
-;; (set-frame-font "DejaVu Sans Mono-16" nil t)
+(set-frame-font "DejaVu Sans Mono-16" nil t)
 (custom-set-variables
  '(initial-frame-alist (quote ((fullscreen . maximized)))))
 
@@ -76,21 +74,21 @@
                nil))
 
 (add-hook 'nxml-mode-hook
-	  '(lambda ()
-	     (hs-minor-mode)
-	     (local-set-key (kbd "M-p") '(lambda () (interactive)
-					   (browse-url (file-name-nondirectory (buffer-file-name)))
-					   ))
-	     ;; (local-set-key (kbd "TAB") (lambda () (interactive)
-	     ;; 			       (hs-toggle-hiding)
-	     ;; 			       ))
-	     ))
+	  (lambda ()
+	    (hs-minor-mode)
+	    (local-set-key (kbd "M-p") (lambda () (interactive)
+					 (browse-url (file-name-nondirectory (buffer-file-name)))
+					 ))
+	    ;; (local-set-key (kbd "TAB") (lambda () (interactive)
+	    ;; 			       (hs-toggle-hiding)
+	    ;; 			       ))
+	    ))
 (add-hook 'html-mode-hook
-	  '(lambda ()
-	     (local-set-key (kbd "M-p") '(lambda () (interactive)
-					   (browse-url (file-name-nondirectory (buffer-file-name)))
-					   ))
-	     ))
+	  (lambda ()
+	    (local-set-key (kbd "M-p") (lambda () (interactive)
+					 (browse-url (file-name-nondirectory (buffer-file-name)))
+					 ))
+	    ))
 (setq auto-mode-alist (append '(("\\.xsd$" . xml-mode)
 				)
 			      auto-mode-alist))
@@ -116,11 +114,11 @@
 	("CHECK" . (:foreground "blue" :background "yellow" :weight bold))
 	("DOING" . (:foreground "blue" :background "yellow" :weight bold))
 	))
-(add-hook 'org-mode-hook '(lambda () 
-			    (progn 
-			      (turn-on-font-lock)
-			      (setq tab-width 4)
-			      )))
+(add-hook 'org-mode-hook (lambda () 
+			   (progn 
+			     (turn-on-font-lock)
+			     (setq tab-width 4)
+			     )))
 
 ;; visual basic mode
 ;; (load-file "c:/iam/emacs/site-lisp/visual-basic-mode.el")
@@ -133,47 +131,47 @@
 ;; cc-mode
 (require 'cc-mode)
 (add-hook 'c-mode-common-hook
-	  '(lambda ()
-	     (gtags-mode 1)
-	     (hide-ifdef-mode)
-	     (font-lock-add-keywords nil
-	     '(("\\<\\(fixme\\|FIXME\\|todo\\|TODO\\|checkme\\|caution\\)" 1
-		font-lock-warning-face t)))
-	     (local-set-key (kbd "M-e") 'glistup-mode)
-	     (local-set-key (kbd "<f2>") '(lambda() (interactive)
-					    (c-end-of-defun)
-					    (c-end-of-defun)
-					    (c-beginning-of-defun)))
-	     (local-set-key (kbd "C-<f2>") 'c-beginning-of-defun)
-	     (setq indent-tabs-mode nil)
-	     (setq-default tab-with 4)
-	     ))
+	  (lambda ()
+	    (gtags-mode 1)
+	    (hide-ifdef-mode)
+	    (font-lock-add-keywords nil
+				    '(("\\<\\(fixme\\|FIXME\\|todo\\|TODO\\|checkme\\|caution\\)" 1
+				       font-lock-warning-face t)))
+	    (local-set-key (kbd "M-e") 'glistup-mode)
+	    (local-set-key (kbd "<f2>") (lambda() (interactive)
+					  (c-end-of-defun)
+					  (c-end-of-defun)
+					  (c-beginning-of-defun)))
+	    (local-set-key (kbd "C-<f2>") 'c-beginning-of-defun)
+	    (setq indent-tabs-mode nil)
+	    (setq-default tab-with 4)
+	    ))
 (define-key c-mode-map (kbd "M-q") 'ff-find-other-file)
 
 ;; c++-mode
 (add-hook 'c++-mode-hook
-	  '(lambda ()
-	     (gtags-mode 1)
-	     (yas-minor-mode 1)
-	     (setq-default tab-with 4)
-	     (local-set-key (kbd "M-q" 'ff-find-other-file))
-	     ))
+	  (lambda ()
+	    (gtags-mode 1)
+	    (yas-minor-mode 1)
+	    (setq-default tab-with 4)
+	    (local-set-key (kbd "M-q" 'ff-find-other-file))
+	    ))
 (define-key c++-mode-map (kbd "M-q") 'ff-find-other-file)
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 
 ;; per-mode
 (defalias 'perl-mode 'cperl-mode)
 (add-hook 'cperl-mode-hook 
-	  '(lambda ()
-	     ;; evaluation perl script
-	     (local-set-key (kbd "M-p") 
-			    '(lambda () (interactive)
-			       (let ((shell-param)
-				     (buffer-name "*perl evaluation*"))
-				 (setq shell-param (format "perl %s" (concat (file-name-nondirectory (buffer-file-name)))))
-				 (shell-command shell-param (get-buffer-create buffer-name))
-				 )))
-	     ))
+	  (lambda ()
+	    ;; evaluation perl script
+	    (local-set-key (kbd "M-p") 
+			   (lambda () (interactive)
+			     (let ((shell-param)
+				   (buffer-name "*perl evaluation*"))
+			       (setq shell-param (format "perl %s" (concat (file-name-nondirectory (buffer-file-name)))))
+			       (shell-command shell-param (get-buffer-create buffer-name))
+			       )))
+	    ))
 
 ;; python-mode
 (defun python-preview (&optional file)
@@ -197,13 +195,13 @@
     ))
 
 (add-hook 'python-mode-hook
-	  '(lambda ()
-	     (local-set-key (kbd "M-p") 'python-preview)
-	     (local-set-key (kbd "<f1>") 'python-doc)
-	     ;; (fci-mode 1)
-	     ;; jedi:setup
-	     ;; (setq jedi:complete-on-dot t)
-	     )
+	  (lambda ()
+	    (local-set-key (kbd "M-p") 'python-preview)
+	    (local-set-key (kbd "<f1>") 'python-doc)
+	    ;; (fci-mode 1)
+	    ;; jedi:setup
+	    ;; (setq jedi:complete-on-dot t)
+	    )
 	  )
 (setq auto-mode-alist (append '(("SConstruct" . python-mode) ;scons
 				)
@@ -229,24 +227,24 @@
     (image-mode)
     (setq buffer-read-only t)
     (previous-multiframe-window)
+    )
   )
-)
 (add-to-list 'file-coding-system-alist '(("\\.dot\\'" . utf-8-with-signature)))
 (add-hook 'graphviz-dot-mode-hook
-	  '(lambda ()
-	     (setq indent-tabs-mode nil)
-	     (setq graphviz-dot-indent-width 4)
-	     (setq graphviz-dot-auto-indent-on-semi nil)
-	     (local-set-key (kbd "M-p") 'graphviz-dot-preview2)
-	     )
+	  (lambda ()
+	    (setq indent-tabs-mode nil)
+	    (setq graphviz-dot-indent-width 4)
+	    (setq graphviz-dot-auto-indent-on-semi nil)
+	    (local-set-key (kbd "M-p") 'graphviz-dot-preview2)
+	    )
 	  )
 
 ;; gtags-mode
 (autoload 'gtags-mode "gtags" "" t)
 ;; (require 'gtags)
 (setq gtags-suggested-key-mapping t)
-(add-hook 'c-mode-hook '(lambda () (gtags-mode 1)))
-(add-hook 'c++-mode-hook '(lambda () (gtags-mode 1)))
+(add-hook 'c-mode-hook (lambda () (gtags-mode 1)))
+(add-hook 'c++-mode-hook (lambda () (gtags-mode 1)))
 (add-hook 'after-save-hook
 	  (lambda ()
 	    (and (boundp 'gtags-mode) gtags-mode
@@ -263,12 +261,12 @@
 		   	 )
 		     )
 		   )
-	      )
+		 )
 	    )
 	  )
 
 (setq gtags-mode-hook
-     '(lambda ()
+      (lambda ()
 	(setq gtags-path-style 'relative)
 	(setq gtags-pop-delete t)
 	;; (setq gtags-suggested-key-mapping t)
@@ -295,19 +293,19 @@
   (gtags-pop-stack)
   )
 (setq gtags-select-mode-hook
-      '(lambda ()
-	 ;; (local-set-key (kbd "M-*") 'gtags-pop-stack)
-	 (local-set-key (kbd "C-t") 'gtags-select-pop-stack)
-	 ;; (local-set-key (kbd "n") 'next-line)
-	 ;; (local-set-key (kbd "p") 'previous-line)
-	 (local-set-key (kbd "n") 'gtags-select-next-line-other-window)
-	 (local-set-key (kbd "p") 'gtags-select-previous-line-other-window)
-	 (local-set-key (kbd "ESC") 'gtags-select-pop-stack)
-	 ;; first tags is selected to other window
-	 ;; (split-window-below)
-	 ;; (gtags-select-tag-other-window)
-	 ;; (previous-multiframe-window)
-	 ))
+      (lambda ()
+	;; (local-set-key (kbd "M-*") 'gtags-pop-stack)
+	(local-set-key (kbd "C-t") 'gtags-select-pop-stack)
+	;; (local-set-key (kbd "n") 'next-line)
+	;; (local-set-key (kbd "p") 'previous-line)
+	(local-set-key (kbd "n") 'gtags-select-next-line-other-window)
+	(local-set-key (kbd "p") 'gtags-select-previous-line-other-window)
+	(local-set-key (kbd "ESC") 'gtags-select-pop-stack)
+	;; first tags is selected to other window
+	;; (split-window-below)
+	;; (gtags-select-tag-other-window)
+	;; (previous-multiframe-window)
+	))
 
 ;; gnuplot
 (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
@@ -315,9 +313,9 @@
 (setq auto-mode-alist (append '(("\\.gp$" . gnuplot-mode))
 			      auto-mode-alist))
 (add-hook 'gnuplot-mode-hook
-	  '(lambda ()
-	     (local-set-key (kbd "M-p") 'gnuplot-etc-preview)
-	     )
+	  (lambda ()
+	    (local-set-key (kbd "M-p") 'gnuplot-etc-preview)
+	    )
 	  )
 ;; (require 'gnuplot)
 ;; (setq gnuplot-program (executable-find "gnuplot"))
@@ -500,8 +498,8 @@ if CODE is non-`nil', return string for code"
 					((numberp (cadr alpha)) (cadr alpha)))
 				  100)
 			     '(50 . 50) '(100 . 100)))))
-     
-			 
+
+
 
 
 (defun ci (ratio years fund &optional capital)
@@ -576,7 +574,7 @@ if CODE is non-`nil', return string for code"
 
 ;; external-el
 ;; (load-file "c:/iam/emacs/site-lisp/coding.el")
-(load-file "c:/iam/gnuglobal/current/share/gtags/gtags.el")
+;; (load-file "c:/iam/gnuglobal/current/share/gtags/gtags.el")
 
 (setq initial-scratch-message
       (concat initial-scratch-message
