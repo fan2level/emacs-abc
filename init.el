@@ -44,7 +44,9 @@
   :ensure t
   :config
   (package-initialize)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
+  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+  (setq package-check-signature nil))
+
 (use-package dired
   :defer t
   :init
