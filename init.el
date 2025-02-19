@@ -94,6 +94,50 @@
   :config
   (setq yas-global-mode 1)
   (yas-reload-all))
+(use-package plantuml-mode
+  :defer t
+  :config
+  (when (eq system-type 'windows-nt)
+    (setq plantuml-jar-path "c:/iam/plantuml/plantuml-1.2023.5.jar")
+    (setq plantuml-default-exec-mode 'jar))
+  :mode ("\\.puml\\'"))
+(use-package cc-mode
+  :defer t
+  :config
+  (setq indent-tabs-mode nil)
+  ;; (setq-default tab-width 4)
+  :bind (("M-q" . 'ff-find-other-file)
+         ))
+
+;; (require 'cc-mode)
+;; (add-hook 'c-mode-common-hook
+;; 	  (lambda ()
+;; 	    (gtags-mode 1)
+;; 	    (hide-ifdef-mode)
+;; 	    (font-lock-add-keywords nil
+;; 				    '(("\\<\\(fixme\\|FIXME\\|todo\\|TODO\\|checkme\\|caution\\)" 1
+;; 				       font-lock-warning-face t)))
+;; 	    (local-set-key (kbd "M-e") 'glistup-mode)
+;; 	    (local-set-key (kbd "<f2>") (lambda() (interactive)
+;; 					  (c-end-of-defun)
+;; 					  (c-end-of-defun)
+;; 					  (c-beginning-of-defun)))
+;; 	    (local-set-key (kbd "C-<f2>") 'c-beginning-of-defun)
+;; 	    (setq indent-tabs-mode nil)
+;; 	    (setq-default tab-with 4)
+;; 	    ))
+;; (define-key c-mode-map (kbd "M-q") 'ff-find-other-file)
+
+;; ;; c++-mode
+;; (add-hook 'c++-mode-hook
+;; 	  (lambda ()
+;; 	    (gtags-mode 1)
+;; 	    (yas-minor-mode 1)
+;; 	    (setq-default tab-with 4)
+;; 	    (local-set-key (kbd "M-q" 'ff-find-other-file))
+;; 	    ))
+;; (define-key c++-mode-map (kbd "M-q") 'ff-find-other-file)
+;; (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 
 ;; --------------------------------------------------
 ;; mode
@@ -164,37 +208,6 @@
 ;; 				)
 ;; 			      auto-mode-alist))
 
-;; cc-mode
-(require 'cc-mode)
-(add-hook 'c-mode-common-hook
-	  (lambda ()
-	    (gtags-mode 1)
-	    (hide-ifdef-mode)
-	    (font-lock-add-keywords nil
-				    '(("\\<\\(fixme\\|FIXME\\|todo\\|TODO\\|checkme\\|caution\\)" 1
-				       font-lock-warning-face t)))
-	    (local-set-key (kbd "M-e") 'glistup-mode)
-	    (local-set-key (kbd "<f2>") (lambda() (interactive)
-					  (c-end-of-defun)
-					  (c-end-of-defun)
-					  (c-beginning-of-defun)))
-	    (local-set-key (kbd "C-<f2>") 'c-beginning-of-defun)
-	    (setq indent-tabs-mode nil)
-	    (setq-default tab-with 4)
-	    ))
-(define-key c-mode-map (kbd "M-q") 'ff-find-other-file)
-
-;; c++-mode
-(add-hook 'c++-mode-hook
-	  (lambda ()
-	    (gtags-mode 1)
-	    (yas-minor-mode 1)
-	    (setq-default tab-with 4)
-	    (local-set-key (kbd "M-q" 'ff-find-other-file))
-	    ))
-(define-key c++-mode-map (kbd "M-q") 'ff-find-other-file)
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-
 ;; graphviz-mode
 (require 'graphviz-dot nil t)
 (defun graphviz-dot-preview2 ()
@@ -227,73 +240,73 @@
 	    )
 	  )
 
-;; gtags-mode
-(autoload 'gtags-mode "gtags" "" t)
-;; (require 'gtags)
-(setq gtags-suggested-key-mapping t)
-(add-hook 'c-mode-hook (lambda () (gtags-mode 1)))
-(add-hook 'c++-mode-hook (lambda () (gtags-mode 1)))
-(add-hook 'after-save-hook
-	  (lambda ()
-	    (and (boundp 'gtags-mode) gtags-mode
-		 (let (root-dir current-dir shell-param)
-		   (setq root-dir (gtags-get-rootpath))
-		   ;; valid if gtags exist
-		   (if root-dir
-		       (progn
-		   	 (setq current-dir (file-name-directory buffer-file-name))
-		   	 (setq shell-param (concat "gtags --single-update " buffer-file-name))
-		   	 (cd root-dir)
-		   	 (shell-command shell-param)
-		   	 (cd current-dir)
-		   	 )
-		     )
-		   )
-		 )
-	    )
-	  )
+;; ;; gtags-mode
+;; (autoload 'gtags-mode "gtags" "" t)
+;; ;; (require 'gtags)
+;; (setq gtags-suggested-key-mapping t)
+;; (add-hook 'c-mode-hook (lambda () (gtags-mode 1)))
+;; (add-hook 'c++-mode-hook (lambda () (gtags-mode 1)))
+;; (add-hook 'after-save-hook
+;; 	  (lambda ()
+;; 	    (and (boundp 'gtags-mode) gtags-mode
+;; 		 (let (root-dir current-dir shell-param)
+;; 		   (setq root-dir (gtags-get-rootpath))
+;; 		   ;; valid if gtags exist
+;; 		   (if root-dir
+;; 		       (progn
+;; 		   	 (setq current-dir (file-name-directory buffer-file-name))
+;; 		   	 (setq shell-param (concat "gtags --single-update " buffer-file-name))
+;; 		   	 (cd root-dir)
+;; 		   	 (shell-command shell-param)
+;; 		   	 (cd current-dir)
+;; 		   	 )
+;; 		     )
+;; 		   )
+;; 		 )
+;; 	    )
+;; 	  )
 
-(setq gtags-mode-hook
-      (lambda ()
-	(setq gtags-path-style 'relative)
-	(setq gtags-pop-delete t)
-	;; (setq gtags-suggested-key-mapping t)
-	;; (setq gtags-auto-update t)
-	))
+;; (setq gtags-mode-hook
+;;       (lambda ()
+;; 	(setq gtags-path-style 'relative)
+;; 	(setq gtags-pop-delete t)
+;; 	;; (setq gtags-suggested-key-mapping t)
+;; 	;; (setq gtags-auto-update t)
+;; 	))
 
-(defun gtags-select-next-line-other-window ()
-  "Select tags to other windows"
-  (interactive)
-  (forward-line 1)
-  (gtags-select-tag-other-window)
-  (previous-multiframe-window)
-  )
-(defun gtags-select-previous-line-other-window ()
-  "Select tags to other windows"
-  (interactive)
-  (forward-line -1)
-  (gtags-select-tag-other-window)
-  (previous-multiframe-window)
-  )
-(defun gtags-select-pop-stack ()
-  "pop stack"
-  (interactive)
-  (gtags-pop-stack)
-  )
-(setq gtags-select-mode-hook
-      (lambda ()
-	;; (local-set-key (kbd "M-*") 'gtags-pop-stack)
-	(local-set-key (kbd "C-t") 'gtags-select-pop-stack)
-	;; (local-set-key (kbd "n") 'next-line)
-	;; (local-set-key (kbd "p") 'previous-line)
-	(local-set-key (kbd "n") 'gtags-select-next-line-other-window)
-	(local-set-key (kbd "p") 'gtags-select-previous-line-other-window)
-	(local-set-key (kbd "ESC") 'gtags-select-pop-stack)
-	;; first tags is selected to other window
-	;; (split-window-below)
-	;; (gtags-select-tag-other-window)
-	;; (previous-multiframe-window)
-	))
+;; (defun gtags-select-next-line-other-window ()
+;;   "Select tags to other windows"
+;;   (interactive)
+;;   (forward-line 1)
+;;   (gtags-select-tag-other-window)
+;;   (previous-multiframe-window)
+;;   )
+;; (defun gtags-select-previous-line-other-window ()
+;;   "Select tags to other windows"
+;;   (interactive)
+;;   (forward-line -1)
+;;   (gtags-select-tag-other-window)
+;;   (previous-multiframe-window)
+;;   )
+;; (defun gtags-select-pop-stack ()
+;;   "pop stack"
+;;   (interactive)
+;;   (gtags-pop-stack)
+;;   )
+;; (setq gtags-select-mode-hook
+;;       (lambda ()
+;; 	;; (local-set-key (kbd "M-*") 'gtags-pop-stack)
+;; 	(local-set-key (kbd "C-t") 'gtags-select-pop-stack)
+;; 	;; (local-set-key (kbd "n") 'next-line)
+;; 	;; (local-set-key (kbd "p") 'previous-line)
+;; 	(local-set-key (kbd "n") 'gtags-select-next-line-other-window)
+;; 	(local-set-key (kbd "p") 'gtags-select-previous-line-other-window)
+;; 	(local-set-key (kbd "ESC") 'gtags-select-pop-stack)
+;; 	;; first tags is selected to other window
+;; 	;; (split-window-below)
+;; 	;; (gtags-select-tag-other-window)
+;; 	;; (previous-multiframe-window)
+;; 	))
 
 ;; gnuplot
 (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
