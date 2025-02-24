@@ -46,13 +46,15 @@
   (package-initialize)
   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
   (setq package-check-signature nil))
-
 (use-package dired
   :defer t
   :init
   (setq ls-lisp-dirs-first t)
   :config
   (setq dired-listing-switches "-lh"))
+(use-package markdown-mode
+  :ensure t
+  :defer t)
 (use-package python-mode
   :ensure t
   :defer t
