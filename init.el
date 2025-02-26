@@ -103,12 +103,14 @@
     (setq plantuml-default-exec-mode 'jar))
   :mode ("\\.puml\\'"))
 (use-package cc-mode
-  :defer t
-  :config
+  :init
   (setq indent-tabs-mode nil)
-  ;; (setq-default tab-width 4)
+  :defer t
   :bind (("M-q" . 'ff-find-other-file)
-         ))
+         )
+  :hook ((c-mode-common . (lambda() (setq c-basic-offset 4)))
+         )
+  )
 
 ;; (require 'cc-mode)
 ;; (add-hook 'c-mode-common-hook
