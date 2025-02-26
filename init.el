@@ -59,33 +59,32 @@
   :ensure t
   :defer t
   :mode ("\\.py\\'" "\\.SConstruct\\'")
-  :bind (:map python-mode-map
-	      ("M-p" . (lambda (&optional file)
-			 (interactive)
-			 (let ((filename (or file (concat (file-name-nondirectory (buffer-file-name)))))
-			       (buffer-name "*python evaluation*"))
-			   (setq shell-param (format "python %s" (concat (file-name-nondirectory (buffer-file-name)))))
-			   (shell-command
-			    (format "python %s" filename) (get-buffer-create buffer-name)))))
-	      ("<f1>" . (lambda (&optional symbol)
-			  (interactive)
-			  (let ((help (or symbol (select-word)))
-				(buffer-name "*python document*")
-				)
-			    (shell-command
-			     (format "python c:/Python37-32/Lib/pydoc.py %s" help) (get-buffer-create buffer-name))
-			    )))))
+  :bind (("M-p" . (lambda (&optional file)
+		    (interactive)
+		    (let ((filename (or file (concat (file-name-nondirectory (buffer-file-name)))))
+			  (buffer-name "*python evaluation*"))
+		      (setq shell-param (format "python %s" (concat (file-name-nondirectory (buffer-file-name)))))
+		      (shell-command
+		       (format "python %s" filename) (get-buffer-create buffer-name)))))
+	 ("<f1>" . (lambda (&optional symbol)
+		     (interactive)
+		     (let ((help (or symbol (select-word)))
+			   (buffer-name "*python document*")
+			   )
+		       (shell-command
+			(format "python c:/Python37-32/Lib/pydoc.py %s" help) (get-buffer-create buffer-name))
+		       ))))
+  )
 (use-package cperl-mode
   :ensure t
   :defer t
-  :bind (:map cperl-mode-map
-	      ("M-p" . (lambda ()
-			 (interactive)
-			 (let ((shell-param)
-			       (buffer-name "*perl evaluation*"))
-			   (setq shell-param (format "perl %s" (concat (file-name-nondirectory (buffer-file-name)))))
-			   (shell-command shell-param (get-buffer-create buffer-name))
-			   )))))
+  :bind (("M-p" . (lambda ()
+		    (interactive)
+		    (let ((shell-param)
+			  (buffer-name "*perl evaluation*"))
+		      (setq shell-param (format "perl %s" (concat (file-name-nondirectory (buffer-file-name)))))
+		      (shell-command shell-param (get-buffer-create buffer-name))
+		      )))))
 (use-package bitbake
   :ensure t
   :defer t
