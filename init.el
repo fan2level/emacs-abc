@@ -111,7 +111,9 @@
   :hook ((c-mode-common . (lambda() (setq c-basic-offset 4)))
          )
   )
-
+(use-package dts-mode
+  :ensure t
+  :defer t)
 ;; (require 'cc-mode)
 ;; (add-hook 'c-mode-common-hook
 ;; 	  (lambda ()
