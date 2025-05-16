@@ -56,7 +56,7 @@
   :ensure t
   :defer t)
 (use-package python-mode
-  :ensure t
+  :ensure nil
   :defer t
   :mode ("\\.py\\'" "\\.SConstruct\\'")
   :bind (("M-p" . (lambda (&optional file)
