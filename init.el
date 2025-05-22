@@ -108,6 +108,9 @@
     (setq plantuml-jar-path "c:/iam/plantuml/plantuml-1.2023.5.jar")
     (setq plantuml-default-exec-mode 'jar))
   :mode ("\\.puml\\'"))
+(use-package dts-mode
+  :ensure t
+  :defer t)
 (use-package cc-mode
   :init
   (setq indent-tabs-mode nil)
