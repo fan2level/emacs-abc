@@ -120,6 +120,9 @@
   :hook ((c-mode-common . (lambda() (setq c-basic-offset 4)))
          )
   )
+(use-package cmake-mode
+  :ensure t
+  :defer t)
 (use-package dts-mode
   :ensure t
   :defer t)
