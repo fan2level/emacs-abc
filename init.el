@@ -112,13 +112,28 @@
   :ensure t
   :defer t)
 (use-package cc-mode
-  :init
-  (setq indent-tabs-mode nil)
+  :ensure nil
   :defer t
+  :config
+  (c-add-style "custom-style"
+	       '("linux"
+		 (c-basic-offset . 2)
+		 (indent-tabs-mode . nil)
+		 (c-offsets-alist
+		  (substatement-open . 0)
+		  (statement-block-intro . +)
+		  (statement-cont . 0)
+		  (case-label . +)
+		  (access-label . -1)
+		  (inexpr-statement . 0)
+		  (label . 0))))
+  (setq c-default-style '((c-mode . "custom-style")
+			  (cc-mode . "gnu")
+			  (other . "gnu")))
   :bind (("M-q" . 'ff-find-other-file)
          )
-  :hook ((c-mode-common . (lambda() (setq c-basic-offset 4)))
-         )
+  ;; :hook ((c-mode-common . (lambda() (setq c-basic-offset 4)))
+  ;;        )
   )
 (use-package cmake-mode
   :ensure t
